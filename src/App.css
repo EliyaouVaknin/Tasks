@@ -16,3 +16,27 @@
 .card-shadow:hover{
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2), 0 12px 40px rgba(0, 0, 0, 0.15);
 }
+
+.primary-btn {
+    background-color: #60AE6D;
+    color: #fff;
+    border: none;
+}
+
+.secondary-btn {
+    background-color: #BEBBBB;
+    color: #fff;
+    border: none;
+}
+
+.primary-btn:hover {
+    background-color: #4b8655;
+    color: #fff;
+    border: none;
+}
+
+.secondary-btn:hover {
+    background-color: #858484;
+    color: #fff;
+    border: none;
+}

@@ -72,6 +72,8 @@ export default function TasksPage({
       setError('')
       setNewTaskDescription('');
       setShowAddTaskModal(false);
+    } else {
+      setError('Please fill all the fields.')
     }
   };
 
@@ -90,7 +92,7 @@ export default function TasksPage({
         <h2>Task Manager</h2>
       </div>
 
-      <Button style={{ backgroundColor: '#60AE6D', color: '#fff', border: 'none' }} onClick={handleAddTaskClick} className="mb-3">
+      <Button className="primary-btn mb-3" onClick={handleAddTaskClick}>
         Add New Task
       </Button>
       {tasks.length > 0 ? (
@@ -118,7 +120,7 @@ export default function TasksPage({
                           onChange={(e) => setEditedDescription(e.target.value)}
                         />
                       </Form.Group>
-                      <Button style={{ backgroundColor: '#60AE6D', color: '#fff', border: 'none' }} onClick={handleSaveTask} className="mt-3">
+                      <Button className="primary-btn mt-3" onClick={handleSaveTask}>
                         Save
                       </Button>
                       <Button
@@ -143,9 +145,8 @@ export default function TasksPage({
                       {currentUser.role === 'admin' && (
                         <>
                           <Button
-                            style={{ backgroundColor: '#60AE6D', color: '#fff', border: 'none' }}
+                            className="primary-btn ml-2"
                             onClick={() => handleEditTask(task)}
-                            className="ml-2"
                           >
                             Edit
                           </Button>
@@ -187,6 +188,7 @@ export default function TasksPage({
         </Modal.Header>
         <Modal.Body>
           <Form>
+            {error && <Alert variant="danger">{error}</Alert>}
             <Form.Group className="mb-3">
               <Form.Label>Title</Form.Label>
               <Form.Control
@@ -211,7 +213,7 @@ export default function TasksPage({
           <Button variant="danger" onClick={handleCancelAddTask}>
             Cancel
           </Button>
-          <Button style={{ backgroundColor: '#60AE6D', color: '#fff', border: 'none' }} onClick={handleAddNewTask}>
+          <Button className="primary-btn" onClick={handleAddNewTask}>
             Add Task
           </Button>
         </Modal.Footer>

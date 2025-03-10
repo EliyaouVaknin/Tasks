@@ -23,10 +23,10 @@ export default function MainPage({handleLogin, handleRegister}) {
                         <Card.Body>
                             <h2>Welcome to Task Manager</h2>
                             <p>Please sign in to manage your tasks:</p>
-                            <Button onClick={handleLoginShow} style={{ backgroundColor: '#60AE6D', color: '#fff', border: 'none' }}>
+                            <Button onClick={handleLoginShow} className="primary-btn">
                                 Sign In
                             </Button>
-                            <Button onClick={handleRegisterShow} style={{ backgroundColor: '#BEBBBB', color: '#fff', border: 'none' }}>
+                            <Button onClick={handleRegisterShow} className="secondary-btn">
                                 Register
                             </Button>
                         </Card.Body>

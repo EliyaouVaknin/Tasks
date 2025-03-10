@@ -12,7 +12,7 @@ export default function SuccessPopup({ show, onHide }) {
                 <Container fluid className="d-flex align-items-center justify-content-center text-center pt-3">
                     <Row>
                         <Col>
-                            <Button style={{ backgroundColor: '#60AE6D', color: '#fff', border: 'none' }} onClick={onHide}>
+                            <Button className="primary-btn" onClick={onHide}>
                                 OK
                             </Button>
                         </Col>
