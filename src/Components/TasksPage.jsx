@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card, Button, ListGroup, Form, Modal, Alert } from 'react-bootstrap';
+import { Card, Button, ListGroup, Form, Modal, Alert, Row, Col } from 'react-bootstrap';
 
 export default function TasksPage({
   tasks,
@@ -82,15 +82,15 @@ export default function TasksPage({
   return (
     <div>
       <div>
-      <div style={{ position: 'absolute', top: 20, right: 20 }}>
-        <Button variant="danger" onClick={handleLogoutClick}>
-          Logout
-        </Button>
-      </div>
-      <h2>Task Manager</h2>
+        <div style={{ position: 'absolute', top: 20, right: 20 }}>
+          <Button variant="danger" onClick={handleLogoutClick}>
+            Logout
+          </Button>
+        </div>
+        <h2>Task Manager</h2>
       </div>
 
-      <Button variant="primary" onClick={handleAddTaskClick} className="mb-3">
+      <Button style={{ backgroundColor: '#60AE6D', color: '#fff', border: 'none' }} onClick={handleAddTaskClick} className="mb-3">
         Add New Task
       </Button>
       {tasks.length > 0 ? (
@@ -118,7 +118,7 @@ export default function TasksPage({
                           onChange={(e) => setEditedDescription(e.target.value)}
                         />
                       </Form.Group>
-                      <Button variant="primary" onClick={handleSaveTask} className="mt-3">
+                      <Button style={{ backgroundColor: '#60AE6D', color: '#fff', border: 'none' }} onClick={handleSaveTask} className="mt-3">
                         Save
                       </Button>
                       <Button
@@ -143,7 +143,7 @@ export default function TasksPage({
                       {currentUser.role === 'admin' && (
                         <>
                           <Button
-                            variant="warning"
+                            style={{ backgroundColor: '#60AE6D', color: '#fff', border: 'none' }}
                             onClick={() => handleEditTask(task)}
                             className="ml-2"
                           >
@@ -169,12 +169,16 @@ export default function TasksPage({
           ))}
         </ListGroup>
       ) : (
-        <Card className="text-center mt-5">
-          <Card.Body>
-            <Card.Title>No tasks yet... 🎉</Card.Title>
-            <Card.Text>Start by adding a new task to stay organized!</Card.Text>
-          </Card.Body>
-        </Card>
+        <Row className="justify-content-center mt-5">
+          <Col xs={12} sm={8} md={6} lg={4}>
+            <Card className="text-center card-shadow">
+              <Card.Body>
+                <Card.Title>No tasks yet... 🎉</Card.Title>
+                <Card.Text>Start by adding a new task to stay organized!</Card.Text>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
       )}
 
       <Modal show={showAddTaskModal} onHide={handleCancelAddTask}>
@@ -204,10 +208,10 @@ export default function TasksPage({
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleCancelAddTask}>
+          <Button variant="danger" onClick={handleCancelAddTask}>
             Cancel
           </Button>
-          <Button variant="primary" onClick={handleAddNewTask}>
+          <Button style={{ backgroundColor: '#60AE6D', color: '#fff', border: 'none' }} onClick={handleAddNewTask}>
             Add Task
           </Button>
         </Modal.Footer>

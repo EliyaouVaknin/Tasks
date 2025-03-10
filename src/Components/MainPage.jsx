@@ -19,14 +19,14 @@ export default function MainPage({handleLogin, handleRegister}) {
         <Container fluid className="d-flex align-items-center justify-content-center text-center" style={{ minHeight: '100vh' }}>
             <Row className="w-100">
                 <Col xs={12} md={8} lg={6} className="mx-auto">
-                    <Card className="shadow-sm">
+                    <Card className="card-shadow">
                         <Card.Body>
                             <h2>Welcome to Task Manager</h2>
                             <p>Please sign in to manage your tasks:</p>
-                            <Button onClick={handleLoginShow} variant="primary">
+                            <Button onClick={handleLoginShow} style={{ backgroundColor: '#60AE6D', color: '#fff', border: 'none' }}>
                                 Sign In
                             </Button>
-                            <Button onClick={handleRegisterShow} variant="success">
+                            <Button onClick={handleRegisterShow} style={{ backgroundColor: '#BEBBBB', color: '#fff', border: 'none' }}>
                                 Register
                             </Button>
                         </Card.Body>

@@ -8,13 +8,11 @@
     margin: 5px;
 }
 
-.header {
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 70px;
-    background-color: antiquewhite;
-    display: flex;
-    justify-content: space-between;
-    vertical-align: middle;
+.card-shadow{
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5), 0 10px 20px rgba(0, 0, 0, 0.3);
+    transition: box-shadow 0.3s ease-in-out;
+}
+
+.card-shadow:hover{
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2), 0 12px 40px rgba(0, 0, 0, 0.15);
 }

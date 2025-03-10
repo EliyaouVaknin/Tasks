@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Form, Alert } from 'react-bootstrap';
+import { Container, Row, Col, Modal, Button, Form, Alert } from 'react-bootstrap';
 
 export default function RegisterPopup({ show, onHide, handleRegister, setShowSuccessPopup }) {
     const [email, setEmail] = useState('');
@@ -43,43 +43,48 @@ export default function RegisterPopup({ show, onHide, handleRegister, setShowSuc
             <Modal.Body>
                 <Form onSubmit={handleSubmit}>
                     {error && <Alert variant="danger">{error}</Alert>}
-                    
+
                     <Form.Group controlId="formBasicEmail">
                         <Form.Label>Email address</Form.Label>
-                        <Form.Control 
-                            type="email" 
-                            placeholder="Enter email" 
-                            value={email} 
-                            onChange={(e) => setEmail(e.target.value)} 
-                            required 
+                        <Form.Control
+                            type="email"
+                            placeholder="Enter email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
                         />
                     </Form.Group>
 
                     <Form.Group controlId="formBasicPassword">
                         <Form.Label>Password</Form.Label>
-                        <Form.Control 
-                            type="password" 
-                            placeholder="Password" 
-                            value={password} 
-                            onChange={(e) => setPassword(e.target.value)} 
-                            required 
+                        <Form.Control
+                            type="password"
+                            placeholder="Password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
                         />
                     </Form.Group>
 
                     <Form.Group controlId="formBasicConfirmPassword">
                         <Form.Label>Confirm Password</Form.Label>
-                        <Form.Control 
-                            type="password" 
-                            placeholder="Confirm Password" 
-                            value={confirmPassword} 
-                            onChange={(e) => setConfirmPassword(e.target.value)} 
-                            required 
+                        <Form.Control
+                            type="password"
+                            placeholder="Confirm Password"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            required
                         />
                     </Form.Group>
-
-                    <Button variant="primary" type="submit" className="mt-3">
-                        Register
-                    </Button>
+                    <Container fluid className="d-flex align-items-center justify-content-center text-center pt-3">
+                        <Row>
+                            <Col>
+                                <Button style={{ backgroundColor: '#60AE6D', color: '#fff', border: 'none' }} type="submit" className="mt-3">
+                                    Register
+                                </Button>
+                            </Col>
+                        </Row>
+                    </Container>
                 </Form>
             </Modal.Body>
         </Modal>
