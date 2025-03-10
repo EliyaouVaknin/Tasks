@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card, Button, ListGroup, Form, Modal } from 'react-bootstrap';
+import { Card, Button, ListGroup, Form, Modal, Alert } from 'react-bootstrap';
 
 export default function TasksPage({
   tasks,
@@ -7,7 +7,8 @@ export default function TasksPage({
   updateTaskStatus,
   updateTaskText,
   deleteTask,
-  handleLogout
+  handleLogout,
+  addNewTask
 }) {
   const [editingTask, setEditingTask] = useState(null);
   const [editedTitle, setEditedTitle] = useState('');
@@ -15,6 +16,10 @@ export default function TasksPage({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState(null);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [newTaskDescription, setNewTaskDescription] = useState('');
+  const [showAddTaskModal, setShowAddTaskModal] = useState(false);
+  const [error, setError] = useState('');
 
   const handleEditTask = (task) => {
     setEditingTask(task);
@@ -25,7 +30,10 @@ export default function TasksPage({
   const handleSaveTask = () => {
     if (editedTitle && editedDescription) {
       updateTaskText(editingTask.id, editedTitle, editedDescription);
-      setEditingTask(null); // Clear editing state
+      setEditingTask(null);
+      setError('')
+    } else {
+      setError('Please fill all the fields.')
     }
   };
 
@@ -52,88 +60,158 @@ export default function TasksPage({
     setShowLogoutConfirm(false);
   };
 
+  const handleAddTaskClick = () => {
+    setShowAddTaskModal(true);
+    setError('')
+  };
+
+  const handleAddNewTask = () => {
+    if (newTaskTitle && newTaskDescription) {
+      addNewTask({ title: newTaskTitle, description: newTaskDescription, status: false });
+      setNewTaskTitle('');
+      setError('')
+      setNewTaskDescription('');
+      setShowAddTaskModal(false);
+    }
+  };
+
+  const handleCancelAddTask = () => {
+    setShowAddTaskModal(false);
+  };
+
   return (
     <div>
+      <div>
       <div style={{ position: 'absolute', top: 20, right: 20 }}>
         <Button variant="danger" onClick={handleLogoutClick}>
           Logout
         </Button>
       </div>
+      <h2>Task Manager</h2>
+      </div>
 
-      <h2>Tasks</h2>
-      <ListGroup>
-        {tasks.map(task => (
-          <ListGroup.Item key={task.id}>
-            <Card>
-              <Card.Body>
-                {editingTask && editingTask.id === task.id ? (
-                  <div>
-                    <Form.Group className="mt-3">
-                      <Form.Label>Title</Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={editedTitle}
-                        onChange={(e) => setEditedTitle(e.target.value)}
-                      />
-                    </Form.Group>
-                    <Form.Group className="mt-2">
-                      <Form.Label>Description</Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={editedDescription}
-                        onChange={(e) => setEditedDescription(e.target.value)}
-                      />
-                    </Form.Group>
-                    <Button variant="primary" onClick={handleSaveTask} className="mt-3">
-                      Save
-                    </Button>
-                    <Button
-                      variant="secondary"
-                      onClick={() => setEditingTask(null)}
-                      className="mt-3 ml-2"
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                ) : (
-                  <div>
-                    <Card.Title>{task.title}</Card.Title>
-                    <Card.Text>{task.description}</Card.Text>
-                    <Button
-                      variant={task.completed ? 'success' : 'warning'}
-                      onClick={() => updateTaskStatus(task.id, !task.completed)}
-                    >
-                      {task.completed ? 'Mark as Pending' : 'Mark as Completed'}
-                    </Button>
+      <Button variant="primary" onClick={handleAddTaskClick} className="mb-3">
+        Add New Task
+      </Button>
+      {tasks.length > 0 ? (
+        <ListGroup>
+          {tasks.map(task => (
+            <ListGroup.Item key={task.id}>
+              <Card>
+                <Card.Body>
+                  {editingTask && editingTask.id === task.id ? (
+                    <div>
+                      {error && <Alert variant="danger">{error}</Alert>}
+                      <Form.Group className="mt-3">
+                        <Form.Label>Title</Form.Label>
+                        <Form.Control
+                          type="text"
+                          value={editedTitle}
+                          onChange={(e) => setEditedTitle(e.target.value)}
+                        />
+                      </Form.Group>
+                      <Form.Group className="mt-2">
+                        <Form.Label>Description</Form.Label>
+                        <Form.Control
+                          type="text"
+                          value={editedDescription}
+                          onChange={(e) => setEditedDescription(e.target.value)}
+                        />
+                      </Form.Group>
+                      <Button variant="primary" onClick={handleSaveTask} className="mt-3">
+                        Save
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        onClick={() => setEditingTask(null)}
+                        className="mt-3 ml-2"
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  ) : (
+                    <div>
+                      <Card.Title>{task.title}</Card.Title>
+                      <Card.Text>{task.description}</Card.Text>
+                      <Button
+                        variant={task.status ? 'success' : 'warning'}
+                        onClick={() => updateTaskStatus(task)}
+                      >
+                        {task.status ? 'Mark as Pending' : 'Mark as Completed'}
+                      </Button>
 
-                    {currentUser.role === 'admin' && (
-                      <>
-                        <Button
-                          variant="warning"
-                          onClick={() => handleEditTask(task)}
-                          className="ml-2"
-                        >
-                          Edit
-                        </Button>
-                        <Button
-                          variant="danger"
-                          onClick={() => {
-                            setTaskToDelete(task);
-                            setShowDeleteConfirm(true);
-                          }}
-                          className="ml-2"
-                        >
-                          Delete
-                        </Button>
-                      </>
-                    )}
-                  </div>
-                )}
-              </Card.Body>
-            </Card>
-          </ListGroup.Item>
-        ))}
-      </ListGroup>
+                      {currentUser.role === 'admin' && (
+                        <>
+                          <Button
+                            variant="warning"
+                            onClick={() => handleEditTask(task)}
+                            className="ml-2"
+                          >
+                            Edit
+                          </Button>
+                          <Button
+                            variant="danger"
+                            onClick={() => {
+                              setTaskToDelete(task);
+                              setShowDeleteConfirm(true);
+                            }}
+                            className="ml-2"
+                          >
+                            Delete
+                          </Button>
+                        </>
+                      )}
+                    </div>
+                  )}
+                </Card.Body>
+              </Card>
+            </ListGroup.Item>
+          ))}
+        </ListGroup>
+      ) : (
+        <Card className="text-center mt-5">
+          <Card.Body>
+            <Card.Title>No tasks yet... 🎉</Card.Title>
+            <Card.Text>Start by adding a new task to stay organized!</Card.Text>
+          </Card.Body>
+        </Card>
+      )}
+
+      <Modal show={showAddTaskModal} onHide={handleCancelAddTask}>
+        <Modal.Header closeButton>
+          <Modal.Title>Add New Task</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group className="mb-3">
+              <Form.Label>Title</Form.Label>
+              <Form.Control
+                type="text"
+                value={newTaskTitle}
+                onChange={(e) => setNewTaskTitle(e.target.value)}
+                placeholder="Enter task title"
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Description</Form.Label>
+              <Form.Control
+                type="text"
+                value={newTaskDescription}
+                onChange={(e) => setNewTaskDescription(e.target.value)}
+                placeholder="Enter task description"
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCancelAddTask}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={handleAddNewTask}>
+            Add Task
+          </Button>
+        </Modal.Footer>
+      </Modal>
 
       <Modal show={showDeleteConfirm} onHide={handleCancelDelete}>
         <Modal.Header closeButton>

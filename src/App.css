@@ -3,3 +3,18 @@
     background-image: url('../public/poalim.jpeg');
     height: 100dvh;
 }
+
+.btn {
+    margin: 5px;
+}
+
+.header {
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 70px;
+    background-color: antiquewhite;
+    display: flex;
+    justify-content: space-between;
+    vertical-align: middle;
+}

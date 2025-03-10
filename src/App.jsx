@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate, redirect } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import MainPage from './Components/MainPage';
@@ -7,52 +7,132 @@ import TasksPage from './Components/TasksPage';
 
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
+  const [tasks, setTasks] = useState([])
 
-  const [users, setUsers] = useState([
-    {
-      role: 'admin',
-      email: 'admin@example.com',
-      password: '123'
-    }, {
-      role: 'user',
-      email: 'user@example.com',
-      password: '123'
-    }]);
+  const handleLogin = async (email, password) => {
+    try {
+      const res = await fetch('http://localhost:3000/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
 
-  const [tasks, setTasks] = useState([
-    { id: 1, title: 'Task 1', description: 'This is the first task', status: false },
-    { id: 2, title: 'Task 2', description: 'This is the second task', status: true },
-    { id: 3, title: 'Task 3', description: 'This is the third task', status: false }
-  ]);
+      const data = await res.json();
 
-  const handleLogin = (email, password) => {
-    const user = users.find(u => u.email === email && u.password === password);
-
-    if (user) {
-      setCurrentUser(user);
-    } else {
-      return 'Invalid email or password';
+      if (res.ok) {
+        localStorage.setItem('token', data.token);
+        setCurrentUser(data.user);
+        setTasks(data.tasks)
+        redirect('/tasks');
+      } else {
+        return data.message;
+      }
+    } catch (error) {
+      console.error('Login error:', error);
     }
   };
 
-  const updateTaskStatus = (id, completed) => {
-    const updatedTasks = tasks.map(task =>
-      task.id === id ? { ...task, completed } : task
-    );
-    setTasks(updatedTasks);
+  const handleRegister = async (email, password) => {
+    try {
+      const res = await fetch('http://localhost:3000/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await res.json();
+      debugger;
+      if (res.ok) {
+        localStorage.setItem('token', data.token);
+        return null;
+      } else {
+        return data.message;
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      return "Something went wrong! Please try again later.";
+    }
   };
 
-  const updateTaskText = (id, title, description) => {
-    const updatedTasks = tasks.map(task =>
-      task.id === id ? { ...task, title, description } : task
-    );
-    setTasks(updatedTasks);
+  const addNewTask = async (newTask) => {
+    try {
+      const response = await fetch('http://localhost:3000/api/tasks', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newTask),
+      });
+
+      if (response.ok) {
+        const savedTask = await response.json();
+        setTasks((prevTasks) => [...prevTasks, savedTask.task]);
+      } else {
+        console.error('Failed to add task');
+      }
+    } catch (error) {
+      console.error('Error adding task:', error);
+    }
   };
 
-  const deleteTask = (id) => {
-    const updatedTasks = tasks.filter(task => task.id !== id);
-    setTasks(updatedTasks);
+  const updateTaskStatus = async (task) => {
+    try {
+      const response = await fetch(`http://localhost:3000/api/tasks/${task.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isUpdateStatus: true, task }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update task status");
+      }
+
+      const resAsJson = await response.json();
+      const updatedTask = resAsJson.task
+
+      setTasks(tasks.map(currentTask =>
+        currentTask.id === task.id ? { ...updatedTask } : currentTask
+      ));
+    } catch (error) {
+      console.error("Error updating task:", error);
+    }
   };
+
+  const updateTaskText = async (id, title, description) => {
+    try {
+      const response = await fetch(`http://localhost:3000/api/tasks/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, description }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update task");
+      }
+
+      const updatedTask = await response.json();
+
+      setTasks(tasks.map(task => (task.id === id ? updatedTask.task : task)));
+    } catch (error) {
+      console.error("Error updating task:", error);
+    }
+  };
+
+  const deleteTask = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:3000/api/tasks/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete task");
+      }
+      setTasks(tasks.filter(task => task.id !== id));
+    } catch (error) {
+      console.error("Error deleting task:", error);
+    }
+  };
+
 
   const handleLogout = () => {
     setCurrentUser(null);
@@ -64,7 +144,7 @@ function App() {
         <Routes>
           <Route
             path="/"
-            element={currentUser ? <Navigate to="/tasks" /> : <MainPage handleLogin={handleLogin} />}
+            element={currentUser ? <Navigate to="/tasks" /> : <MainPage handleLogin={handleLogin} handleRegister={handleRegister} />}
           />
           <Route path="/tasks" element={currentUser ?
             <TasksPage
@@ -74,6 +154,7 @@ function App() {
               updateTaskText={updateTaskText}
               deleteTask={deleteTask}
               handleLogout={handleLogout}
+              addNewTask={addNewTask}
             /> : <Navigate to="/" />} />
         </Routes>
       </Router>
