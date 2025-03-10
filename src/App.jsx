@@ -21,9 +21,9 @@ function App() {
       const data = await res.json();
 
       if (res.ok) {
-        setCurrentUser(data.user);
         setTasks(data.tasks)
         setToken(data.token)
+        setCurrentUser(data.user);
         redirect('/tasks');
       } else {
         return data.message;

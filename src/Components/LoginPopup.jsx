@@ -1,10 +1,11 @@
-import React, { useState, useEffect  } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Modal, Button, Form, Alert } from 'react-bootstrap';
 import '../Styles/LoginPopup.css';
 
 export default function LoginPopup({ show, onHide, handleLogin }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [isLoading, setsIsLoading] = useState(false)
     const [error, setError] = useState('');
 
     useEffect(() => {
@@ -15,9 +16,9 @@ export default function LoginPopup({ show, onHide, handleLogin }) {
         }
     }, [show]);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        let res = handleLogin(email, password);
+        let res = await handleLogin(email, password);
         setError('');
         if (res) {
             setError(res);
@@ -40,13 +41,13 @@ export default function LoginPopup({ show, onHide, handleLogin }) {
 
                         <Form.Group controlId="formBasicPassword">
                             <Form.Label>Password</Form.Label>
-                            <Form.Control type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)}/>
+                            <Form.Control type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} />
                         </Form.Group>
                         <Container fluid className="d-flex align-items-center justify-content-center text-center pt-3">
                             <Row>
                                 <Col>
                                     <Button variant="primary" type="submit">
-                                        Login
+                                        {isLoading ? 'Loading...' : 'Login'}
                                     </Button>
                                 </Col>
                             </Row>
