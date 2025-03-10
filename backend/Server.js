@@ -16,11 +16,9 @@ const users = [
   { id: 1, role: 'admin', email: 'admin@example.com', password: bcrypt.hashSync('123', 10) },
 ];
 
-const tasks = []
-
+const tasks = [];
 
 const SECRET_KEY = process.env.JWT_SECRET || 'supersecretkey';
-
 
 const verifyToken = (req, res, next) => {
   const token = req.headers['authorization'];
@@ -35,7 +33,6 @@ const verifyToken = (req, res, next) => {
   });
 };
 
-
 app.post('/api/login', (req, res) => {
   const { email, password } = req.body;
   const user = users.find(u => u.email === email);
@@ -46,52 +43,53 @@ app.post('/api/login', (req, res) => {
 
   const token = jwt.sign({ id: user.id, role: user.role }, SECRET_KEY, { expiresIn: '1h' });
 
-  res.json({ token, user: { id: user.id, role: user.role, email: user.email }, tasks });
+  res.json({ token: `Bearer ${token}`, user: { id: user.id, role: user.role, email: user.email }, tasks });
 });
 
 app.post('/api/register', async (req, res) => {
   try {
-      const { email, password } = req.body;
+    const { email, password } = req.body;
 
-      if (!email || !password) {
-          return res.status(400).json({ message: 'Email and password are required.' });
-      }
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Email and password are required.' });
+    }
 
-      const existingUser = users.find(user => user.email === email);
-      if (existingUser) {
-          return res.status(409).json({ message: 'User already exists. Please log in.' });
-      }
+    const existingUser = users.find(user => user.email === email);
+    if (existingUser) {
+      return res.status(409).json({ message: 'User already exists. Please log in.' });
+    }
 
-      const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-      const newUser = {
-          id: uuidv4(),
-          role: 'user',
-          email,
-          password: hashedPassword
-      };
+    const newUser = {
+      id: uuidv4(),
+      role: 'user',
+      email,
+      password: hashedPassword
+    };
 
-      users.push(newUser);
+    users.push(newUser);
 
-      const token = jwt.sign(
-          { id: newUser.id, email: newUser.email, role: newUser.role }, 
-          SECRET_KEY, 
-          { expiresIn: '2h' }
-      );
+    const token = jwt.sign(
+      { id: newUser.id, email: newUser.email, role: newUser.role },
+      SECRET_KEY,
+      { expiresIn: '2h' }
+    );
 
-      res.status(201).json({ 
-          message: 'Registration successful!',
-          token, 
-          user: { id: newUser.id, email: newUser.email, role: newUser.role } 
-      });
+    res.status(201).json({
+      message: 'Registration successful!',
+      token,
+      user: { id: newUser.id, email: newUser.email, role: newUser.role }
+    });
 
   } catch (error) {
-      console.error('Registration error:', error);
-      res.status(500).json({ message: 'Internal Server Error' });
+    console.error('Registration error:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
   }
 });
 
-app.post('/api/tasks', (req, res) => {
+app.post('/api/tasks', verifyToken, (req, res) => {
+  debugger;
   const { title, description, status } = req.body;
 
   if (!title || !description) {
@@ -109,7 +107,7 @@ app.post('/api/tasks', (req, res) => {
   res.status(201).json({ message: 'Task created successfully', task: newTask });
 });
 
-app.put('/api/tasks/:id', (req, res) => {
+app.put('/api/tasks/:id', verifyToken, (req, res) => {
   const { id } = req.params;
   const { title, description, status, isUpdateStatus } = req.body;
 
@@ -129,9 +127,7 @@ app.put('/api/tasks/:id', (req, res) => {
   res.json({ message: 'Task updated successfully', task });
 });
 
-
-
-app.delete('/api/tasks/:id', (req, res) => {
+app.delete('/api/tasks/:id', verifyToken, (req, res) => {
   const { id } = req.params;
   const taskIndex = tasks.findIndex(task => task.id === id);
 

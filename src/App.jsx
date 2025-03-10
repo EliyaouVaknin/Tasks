@@ -7,6 +7,7 @@ import TasksPage from './Components/TasksPage';
 
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
+  const [token, setToken] = useState('');
   const [tasks, setTasks] = useState([])
 
   const handleLogin = async (email, password) => {
@@ -20,9 +21,9 @@ function App() {
       const data = await res.json();
 
       if (res.ok) {
-        localStorage.setItem('token', data.token);
         setCurrentUser(data.user);
         setTasks(data.tasks)
+        setToken(data.token)
         redirect('/tasks');
       } else {
         return data.message;
@@ -60,6 +61,7 @@ function App() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'authorization': token
         },
         body: JSON.stringify(newTask),
       });
@@ -79,7 +81,10 @@ function App() {
     try {
       const response = await fetch(`http://localhost:3000/api/tasks/${task.id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          'Content-Type': 'application/json',
+          'authorization': token
+         },
         body: JSON.stringify({ isUpdateStatus: true, task }),
       });
 
@@ -102,7 +107,10 @@ function App() {
     try {
       const response = await fetch(`http://localhost:3000/api/tasks/${id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          'Content-Type': 'application/json',
+          'authorization': token
+         },
         body: JSON.stringify({ title, description }),
       });
 
@@ -122,6 +130,9 @@ function App() {
     try {
       const response = await fetch(`http://localhost:3000/api/tasks/${id}`, {
         method: "DELETE",
+        headers: { 
+          'authorization': token
+         },
       });
 
       if (!response.ok) {
