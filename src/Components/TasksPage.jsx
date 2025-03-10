@@ -136,7 +136,7 @@ export default function TasksPage({
                       <Card.Title>{task.title}</Card.Title>
                       <Card.Text>{task.description}</Card.Text>
                       <Button
-                        variant={task.status ? 'success' : 'warning'}
+                        className={task.status ? 'primary-btn' : 'secondary-btn'}
                         onClick={() => updateTaskStatus(task)}
                       >
                         {task.status ? 'Mark as Pending' : 'Mark as Completed'}

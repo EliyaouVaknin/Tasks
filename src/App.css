@@ -18,25 +18,25 @@
 }
 
 .primary-btn {
-    background-color: #60AE6D;
+    background-color: #60AE6D !important;
     color: #fff;
     border: none;
 }
 
 .secondary-btn {
-    background-color: #BEBBBB;
+    background-color: #BEBBBB !important;
     color: #fff;
     border: none;
 }
 
 .primary-btn:hover {
-    background-color: #4b8655;
+    background-color: #4b8655 !important;
     color: #fff;
     border: none;
 }
 
 .secondary-btn:hover {
-    background-color: #858484;
+    background-color: #858484 !important;
     color: #fff;
     border: none;
 }
