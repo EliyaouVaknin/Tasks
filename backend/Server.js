@@ -43,7 +43,11 @@ app.post('/api/login', (req, res) => {
 
   const token = jwt.sign({ id: user.id, role: user.role }, SECRET_KEY, { expiresIn: '1h' });
 
-  res.json({ token: `Bearer ${token}`, user: { id: user.id, role: user.role, email: user.email }, tasks });
+  res.json({ token: `Bearer ${token}`, user: { id: user.id, role: user.role, email: user.email } });
+});
+
+app.get('/api/tasks', verifyToken, (req, res) => {
+  res.json({ tasks });
 });
 
 app.post('/api/register', async (req, res) => {
@@ -89,7 +93,6 @@ app.post('/api/register', async (req, res) => {
 });
 
 app.post('/api/tasks', verifyToken, (req, res) => {
-  debugger;
   const { title, description, status } = req.body;
 
   if (!title || !description) {

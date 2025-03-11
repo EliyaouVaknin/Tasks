@@ -21,17 +21,32 @@ function App() {
       const data = await res.json();
 
       if (res.ok) {
-        setTasks(data.tasks)
-        setToken(data.token)
+        setToken(data.token);
         setCurrentUser(data.user);
-        redirect('/tasks');
+
+        const tasksRes = await fetch('http://localhost:3000/api/tasks', {
+          method: 'GET',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': data.token
+          }
+        });
+
+        const tasksData = await tasksRes.json();
+
+        if (tasksRes.ok) {
+          setTasks(tasksData.tasks);
+          redirect('/tasks');
+        } else {
+          console.error('Error fetching tasks:', tasksData.message);
+        }
       } else {
         return data.message;
       }
     } catch (error) {
       console.error('Login error:', error);
     }
-  };
+};
 
   const handleRegister = async (email, password) => {
     try {
