@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, Button, ListGroup, Form, Modal, Alert, Row, Col } from 'react-bootstrap';
 
 export default function TasksPage({
@@ -19,7 +19,14 @@ export default function TasksPage({
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [newTaskDescription, setNewTaskDescription] = useState('');
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
+  const [isTaskPublic, setIsTaskPublic] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (editingTask) {
+      setIsTaskPublic(editingTask.isPublic);
+    }
+  }, [editingTask]);
 
   const handleEditTask = (task) => {
     setEditingTask(task);
@@ -29,7 +36,7 @@ export default function TasksPage({
 
   const handleSaveTask = () => {
     if (editedTitle && editedDescription) {
-      updateTaskText(editingTask.id, editedTitle, editedDescription);
+      updateTaskText(editingTask.id, editedTitle, editedDescription, isTaskPublic);
       setEditingTask(null);
       setError('')
     } else {
@@ -67,10 +74,11 @@ export default function TasksPage({
 
   const handleAddNewTask = () => {
     if (newTaskTitle && newTaskDescription) {
-      addNewTask({ title: newTaskTitle, description: newTaskDescription, status: false });
+      addNewTask({ title: newTaskTitle, description: newTaskDescription, status: false, isPublic: isTaskPublic });
       setNewTaskTitle('');
       setError('')
       setNewTaskDescription('');
+      setIsTaskPublic(false);
       setShowAddTaskModal(false);
     } else {
       setError('Please fill all the fields.')
@@ -120,6 +128,15 @@ export default function TasksPage({
                           onChange={(e) => setEditedDescription(e.target.value)}
                         />
                       </Form.Group>
+                      <Form.Group className="mt-2">
+                        <Form.Check
+                          type="checkbox"
+                          label="Visible to all users"
+                          checked={isTaskPublic}
+                          onChange={(e) => setIsTaskPublic(e.target.checked)}
+                        />
+                      </Form.Group>
+
                       <Button className="primary-btn mt-3" onClick={handleSaveTask}>
                         Save
                       </Button>
@@ -207,6 +224,14 @@ export default function TasksPage({
                 placeholder="Enter task description"
               />
             </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Check
+                type="checkbox"
+                label="Visible to all users"
+                checked={isTaskPublic}
+                onChange={(e) => setIsTaskPublic(e.target.checked)}
+              />
+            </Form.Group>
           </Form>
         </Modal.Body>
         <Modal.Footer>
@@ -218,7 +243,6 @@ export default function TasksPage({
           </Button>
         </Modal.Footer>
       </Modal>
-
       <Modal show={showDeleteConfirm} onHide={handleCancelDelete}>
         <Modal.Header closeButton>
           <Modal.Title>Confirm Deletion</Modal.Title>

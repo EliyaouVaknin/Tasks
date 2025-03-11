@@ -17,6 +17,7 @@ const users = [
 ];
 
 const tasks = [];
+let currentUser = ""
 
 const SECRET_KEY = process.env.JWT_SECRET || 'supersecretkey';
 
@@ -42,12 +43,18 @@ app.post('/api/login', (req, res) => {
   }
 
   const token = jwt.sign({ id: user.id, role: user.role }, SECRET_KEY, { expiresIn: '1h' });
+  currentUser = { id: user.id, role: user.role }
 
   res.json({ token: `Bearer ${token}`, user: { id: user.id, role: user.role, email: user.email } });
 });
 
 app.get('/api/tasks', verifyToken, (req, res) => {
-  res.json({ tasks });
+  if (currentUser.role === 'admin') {
+    return res.json({ tasks });
+  }
+  
+  const filteredTasks = tasks.filter(task => task.isPublic);
+  res.json({ tasks: filteredTasks });
 });
 
 app.post('/api/register', async (req, res) => {
@@ -93,7 +100,7 @@ app.post('/api/register', async (req, res) => {
 });
 
 app.post('/api/tasks', verifyToken, (req, res) => {
-  const { title, description, status } = req.body;
+  const { title, description, status, isPublic } = req.body;
 
   if (!title || !description) {
     return res.status(400).json({ message: 'Title and description are required' });
@@ -103,6 +110,7 @@ app.post('/api/tasks', verifyToken, (req, res) => {
     title,
     description,
     status: status || false,
+    isPublic
   };
 
   tasks.push(newTask);
@@ -112,7 +120,7 @@ app.post('/api/tasks', verifyToken, (req, res) => {
 
 app.put('/api/tasks/:id', verifyToken, (req, res) => {
   const { id } = req.params;
-  const { title, description, status, isUpdateStatus } = req.body;
+  const { title, description, status, isUpdateStatus, isPublic } = req.body;
 
   const task = tasks.find(task => task.id === id);
   if (!task) {
@@ -125,6 +133,7 @@ app.put('/api/tasks/:id', verifyToken, (req, res) => {
     if (title !== undefined) task.title = title;
     if (description !== undefined) task.description = description;
     if (status !== undefined) task.status = status;
+    if (isPublic !== undefined) task.isPublic = isPublic;
   }
 
   res.json({ message: 'Task updated successfully', task });

@@ -57,7 +57,7 @@ function App() {
       });
 
       const data = await res.json();
-      debugger;
+
       if (res.ok) {
         localStorage.setItem('token', data.token);
         return null;
@@ -118,7 +118,7 @@ function App() {
     }
   };
 
-  const updateTaskText = async (id, title, description) => {
+  const updateTaskText = async (id, title, description, isPublic) => {
     try {
       const response = await fetch(`http://localhost:3000/api/tasks/${id}`, {
         method: "PUT",
@@ -126,7 +126,7 @@ function App() {
           'Content-Type': 'application/json',
           'authorization': token
          },
-        body: JSON.stringify({ title, description }),
+        body: JSON.stringify({ title, description, isPublic }),
       });
 
       if (!response.ok) {
@@ -162,6 +162,7 @@ function App() {
 
   const handleLogout = () => {
     setCurrentUser(null);
+    setTasks([])
   };
 
   return (
