@@ -74,7 +74,7 @@ export default function TasksPage({
 
   const handleAddNewTask = () => {
     if (newTaskTitle && newTaskDescription) {
-      addNewTask({ title: newTaskTitle, description: newTaskDescription, status: false, isPublic: isTaskPublic });
+      addNewTask({ title: newTaskTitle, description: newTaskDescription, status: false, isPublic: currentUser.role == 'user' ? true : isTaskPublic });
       setNewTaskTitle('');
       setError('')
       setNewTaskDescription('');
@@ -224,14 +224,16 @@ export default function TasksPage({
                 placeholder="Enter task description"
               />
             </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Check
-                type="checkbox"
-                label="Visible to all users"
-                checked={isTaskPublic}
-                onChange={(e) => setIsTaskPublic(e.target.checked)}
-              />
-            </Form.Group>
+            {currentUser.role == 'admin' && (
+              <Form.Group className="mb-3">
+                <Form.Check
+                  type="checkbox"
+                  label="Visible to all users"
+                  checked={isTaskPublic}
+                  onChange={(e) => setIsTaskPublic(e.target.checked)}
+                />
+              </Form.Group>
+            )}
           </Form>
         </Modal.Body>
         <Modal.Footer>
@@ -243,6 +245,7 @@ export default function TasksPage({
           </Button>
         </Modal.Footer>
       </Modal>
+
       <Modal show={showDeleteConfirm} onHide={handleCancelDelete}>
         <Modal.Header closeButton>
           <Modal.Title>Confirm Deletion</Modal.Title>
